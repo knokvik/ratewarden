@@ -4,13 +4,13 @@
  */
 
 const express = require('express');
-const rateGuard = require('../src/index');
+const ratewarden = require('../src/index');
 
 const app = express();
 app.use(express.json());
 
 // Zero-config rate limiting
-app.use(rateGuard());
+app.use(ratewarden());
 
 // Test endpoints
 app.get('/api/public', (req, res) => {
@@ -29,7 +29,7 @@ app.get('/api/data', (req, res) => {
 
 const PORT = 3000;
 app.listen(PORT, () => {
-    console.log(`\n🎯 rate-guard example server running on http://localhost:${PORT}\n`);
+    console.log(`\n🎯 ratewarden example server running on http://localhost:${PORT}\n`);
     console.log('Try these commands to test rate limiting:\n');
     console.log('1. Test as anonymous user (IP-based):');
     console.log(`   curl http://localhost:${PORT}/api/public\n`);

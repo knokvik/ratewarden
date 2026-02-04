@@ -3,7 +3,7 @@
  * Simple test runner without external dependencies
  */
 
-const rateGuard = require('../src/index');
+const ratewarden = require('../src/index');
 const { resolveIdentity } = require('../src/identity');
 const SlidingWindowLimiter = require('../src/limiter');
 
@@ -102,7 +102,7 @@ setTimeout(() => {
     // Test: Middleware
     console.log('\n=== Testing Middleware ===\n');
 
-    const middleware = rateGuard({
+    const middleware = ratewarden({
         windowMs: 1000,
         tiers: { free: 2, guest: 1 }
     });

@@ -21,7 +21,7 @@ c07f054 feat: implement core rate limiting algorithms
 
 ### 1. Create a new repository on GitHub
 - Go to https://github.com/new
-- Repository name: `rate-guard`
+- Repository name: `ratewarden`
 - Description: "Zero-config, identity-aware, tier-based rate limiter for Node.js APIs"
 - Make it **Public** (so others can use it)
 - **Don't** initialize with README (we already have one)
@@ -32,7 +32,7 @@ c07f054 feat: implement core rate limiting algorithms
 cd /Users/nirajrajendranaphade/Programming/npm/rate-guard
 
 # Add your GitHub remote (replace YOUR_USERNAME)
-git remote add origin https://github.com/YOUR_USERNAME/rate-guard.git
+git remote add origin https://github.com/YOUR_USERNAME/ratewarden.git
 
 # Push to GitHub
 git push -u origin main
@@ -44,7 +44,7 @@ After creating the repo, update `package.json`:
 ```json
 "repository": {
   "type": "git",
-  "url": "https://github.com/YOUR_USERNAME/rate-guard.git"
+  "url": "https://github.com/YOUR_USERNAME/ratewarden.git"
 }
 ```
 
@@ -67,9 +67,9 @@ npm login
 npm publish
 ```
 
-**Note:** The package name `rate-guard` might be taken. You can:
+**Note:** The package name `ratewarden` might be taken. You can:
 1. Try publishing as-is
-2. Or rename to `@YOUR_USERNAME/rate-guard` (scoped package)
+2. Or rename to `@YOUR_USERNAME/ratewarden` (scoped package)
 
 ## ⚠️ About the Test Folder
 

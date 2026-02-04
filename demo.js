@@ -59,7 +59,7 @@ function makeRequest(token, count) {
 
 async function runDemo() {
     console.log('\n╔════════════════════════════════════════════╗');
-    console.log('║   rate-guard Demo - Identity-Aware        ║');
+    console.log('║   ratewarden Demo - Identity-Aware        ║');
     console.log('║   Rate Limiting in Action                 ║');
     console.log('╚════════════════════════════════════════════╝\n');
 

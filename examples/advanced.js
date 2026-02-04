@@ -4,7 +4,7 @@
  */
 
 const express = require('express');
-const rateGuard = require('../src/index');
+const ratewarden = require('../src/index');
 
 const app = express();
 app.use(express.json());
@@ -30,7 +30,7 @@ app.use((req, res, next) => {
 });
 
 // Advanced rate limiting with custom tier resolution
-app.use(rateGuard({
+app.use(ratewarden({
     windowMs: 60000, // 1 minute
     tiers: {
         free: 10,        // 10 requests per minute
@@ -65,7 +65,7 @@ app.post('/api/data', (req, res) => {
 
 const PORT = 3001;
 app.listen(PORT, () => {
-    console.log(`\n🚀 Advanced rate-guard example running on http://localhost:${PORT}\n`);
+    console.log(`\n🚀 Advanced ratewarden example running on http://localhost:${PORT}\n`);
     console.log('Test different user tiers:\n');
     console.log('1. Free tier (10 req/min):');
     console.log(`   curl -H "Authorization: Bearer free-user-token" http://localhost:${PORT}/api/users\n`);

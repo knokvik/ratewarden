@@ -1,31 +1,31 @@
 {
-  "name": "rate-guard",
-  "version": "1.0.0",
-  "description": "A zero-config, identity-aware, tier-based rate limiter for Node.js APIs",
-  "main": "src/index.js",
-  "scripts": {
-    "test": "node test/test.js"
-  },
-  "keywords": [
-    "rate-limit",
-    "rate-limiting",
-    "middleware",
-    "express",
-    "api",
-    "throttle",
-    "tier-based",
-    "identity-aware"
-  ],
-  "author": "Niraj Rajendra Naphade",
-  "license": "MIT",
-  "engines": {
-    "node": ">=16"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/yourusername/rate-guard.git"
-  },
-  "dependencies": {
-    "express": "^5.2.1"
-  }
+    "name": "ratewarden",
+    "version": "1.0.0",
+    "description": "A zero-config, identity-aware, tier-based rate limiter for Node.js APIs",
+    "main": "src/index.js",
+    "scripts": {
+        "test": "node test/test.js"
+    },
+    "keywords": [
+        "rate-limit",
+        "rate-limiting",
+        "middleware",
+        "express",
+        "api",
+        "throttle",
+        "tier-based",
+        "identity-aware"
+    ],
+    "author": "Niraj Rajendra Naphade",
+    "license": "MIT",
+    "engines": {
+        "node": ">=16"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/yourusername/rate-guard.git"
+    },
+    "dependencies": {
+        "express": "^5.2.1"
+    }
 }

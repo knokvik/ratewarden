@@ -1,4 +1,4 @@
-# rate-guard - Project Summary
+# ratewarden - Project Summary
 
 ## ✅ Package Successfully Created!
 
@@ -13,7 +13,7 @@ A production-ready, zero-config rate limiting middleware for Node.js that automa
 ### 🏗️ Architecture
 
 ```
-rate-guard/
+ratewarden/
 ├── src/
 │   ├── index.js          # Main middleware factory
 │   ├── identity.js       # Smart identity resolution
@@ -50,8 +50,8 @@ npm init -y  # Already done
 
 **Use:**
 ```javascript
-const rateGuard = require('rate-guard');
-app.use(rateGuard()); // Done!
+const ratewarden = require('ratewarden');
+app.use(ratewarden()); // Done!
 ```
 
 ### 💎 Key Differentiators
@@ -95,14 +95,14 @@ app.use(rateGuard()); // Done!
    ```bash
    git init
    git add .
-   git commit -m "Initial release: rate-guard v1.0.0"
+   git commit -m "Initial release: ratewarden v1.0.0"
    git remote add origin <your-repo-url>
    git push -u origin main
    ```
 
 ### 🎤 Elevator Pitch
 
-**"rate-guard is a zero-config rate limiter that automatically understands who is making API requests and applies intelligent tier-based limits—perfect for developers who want production-grade protection without the complexity of Redis or extensive configuration."**
+**"ratewarden is a zero-config rate limiter that automatically understands who is making API requests and applies intelligent tier-based limits—perfect for developers who want production-grade protection without the complexity of Redis or extensive configuration."**
 
 ### 💼 Interview Talking Points
 

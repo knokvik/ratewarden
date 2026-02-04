@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2026-02-04
 
 ### Added
-- 🎉 Initial release of rate-guard
+- 🎉 Initial release of ratewarden
 - Zero-config rate limiting middleware for Express.js
 - Smart identity resolution (Authorization header → x-user-id → IP)
 - Tier-based rate limiting (free, pro, admin, guest)

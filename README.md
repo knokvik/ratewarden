@@ -1,16 +1,16 @@
-# rate-guard
+# ratewarden
 
 **A zero-config, identity-aware, tier-based rate limiter for Node.js APIs**
 
-Stop API abuse without the hassle. `rate-guard` automatically understands who is making requests and applies intelligent rate limits based on user tiers.
+Stop API abuse without the hassle. `ratewarden` automatically understands who is making requests and applies intelligent rate limits based on user tiers.
 
-## 🎯 Why rate-guard?
+## 🎯 Why ratewarden?
 
 Most rate limiters are either:
 - **Too simple**: Only rate limit by IP (breaks for shared networks)
 - **Too complex**: Require Redis, complex configuration, or 20+ options
 
-`rate-guard` is the Goldilocks solution:
+`ratewarden` is the Goldilocks solution:
 - ✅ **Zero-config**: Works out of the box with sensible defaults
 - ✅ **Identity-aware**: Automatically detects users from tokens, headers, or IP
 - ✅ **Tier-based**: Different limits for free, pro, admin users
@@ -23,19 +23,19 @@ Most rate limiters are either:
 ### Installation
 
 ```bash
-npm install rate-guard
+npm install ratewarden
 ```
 
 ### Basic Usage (Zero Config)
 
 ```javascript
 const express = require('express');
-const rateGuard = require('rate-guard');
+const ratewarden = require('ratewarden');
 
 const app = express();
 
 // That's it! One line of code.
-app.use(rateGuard());
+app.use(ratewarden());
 
 app.get('/api/data', (req, res) => {
   res.json({ message: 'Success!' });
@@ -52,7 +52,7 @@ app.listen(3000);
 
 ### Smart Identity Resolution
 
-`rate-guard` automatically figures out WHO is making the request:
+`ratewarden` automatically figures out WHO is making the request:
 
 ```
 Request → Check Authorization header (JWT/API key) 
@@ -80,7 +80,7 @@ Based on identity, users are automatically assigned tiers:
 ### Custom Tiers
 
 ```javascript
-app.use(rateGuard({
+app.use(ratewarden({
   windowMs: 60000, // 1 minute
   tiers: {
     free: 100,
@@ -95,7 +95,7 @@ app.use(rateGuard({
 Map request to tier based on user data:
 
 ```javascript
-app.use(rateGuard({
+app.use(ratewarden({
   resolveTier: (req) => {
     // Assuming you have auth middleware that sets req.user
     if (req.user?.plan === 'premium') return 'pro';
@@ -108,7 +108,7 @@ app.use(rateGuard({
 ### Custom Identity Key
 
 ```javascript
-app.use(rateGuard({
+app.use(ratewarden({
   keyGenerator: (req) => {
     // Rate limit by organization ID instead of user
     return req.user?.organizationId || req.ip;
@@ -119,7 +119,7 @@ app.use(rateGuard({
 ### Custom Error Handling
 
 ```javascript
-app.use(rateGuard({
+app.use(ratewarden({
   onLimitReached: (req, res, info) => {
     console.log(`Rate limit hit: ${info.tier}, ${info.current}/${info.limit}`);
     // Still sends 429, but you can log/alert
@@ -131,13 +131,13 @@ app.use(rateGuard({
 
 ```javascript
 // Strict limits on auth endpoints
-app.use('/auth', rateGuard({
+app.use('/auth', ratewarden({
   tiers: { guest: 5 },
   windowMs: 60000
 }));
 
 // Relaxed limits on public API
-app.use('/api', rateGuard({
+app.use('/api', ratewarden({
   tiers: { guest: 100 },
   windowMs: 60000
 }));
@@ -145,7 +145,7 @@ app.use('/api', rateGuard({
 
 ## 📡 HTTP Headers
 
-`rate-guard` follows the [IETF RateLimit Headers draft](https://datatracker.ietf.org/doc/draft-ietf-httpapi-ratelimit-headers/):
+`ratewarden` follows the [IETF RateLimit Headers draft](https://datatracker.ietf.org/doc/draft-ietf-httpapi-ratelimit-headers/):
 
 ### On Success (200)
 ```
@@ -176,7 +176,7 @@ Retry-After: 24
 
 ### Algorithm: Sliding Window Counter
 
-Instead of fixed buckets, `rate-guard` uses a sliding window:
+Instead of fixed buckets, `ratewarden` uses a sliding window:
 
 ```
 Window = 60 seconds
@@ -200,7 +200,7 @@ Req:  ✓     ✓     ✓     ✗     ✓
 
 ## 🆚 Comparison with Other Libraries
 
-| Feature | rate-guard | express-rate-limit | rate-limiter-flexible |
+| Feature | ratewarden | express-rate-limit | rate-limiter-flexible |
 |---------|-----------|-------------------|---------------------|
 | Zero-config | ✅ | ❌ (requires config) | ❌ (requires Redis) |
 | Identity-aware | ✅ | ❌ (IP only by default) | ⚠️ (manual setup) |
@@ -289,7 +289,7 @@ MIT © Niraj Rajendra Naphade
 
 **Batteries included, but removable.**
 
-`rate-guard` makes the 90% use case trivial while still allowing customization for the other 10%.
+`ratewarden` makes the 90% use case trivial while still allowing customization for the other 10%.
 
 ---
 

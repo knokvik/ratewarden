@@ -23,7 +23,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/yourusername/rate-guard.git"
+        "url": "https://github.com/knokvik/ratewarden.git"
     },
     "dependencies": {
         "express": "^5.2.1"

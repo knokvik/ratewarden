@@ -1,10 +1,10 @@
-# ratewarden
+# Ratewarden
 
 **A zero-config, identity-aware, tier-based rate limiter for Node.js APIs**
 
 Stop API abuse without the hassle. `ratewarden` automatically understands who is making requests and applies intelligent rate limits based on user tiers.
 
-## 🎯 Why ratewarden?
+## 🎯 Why Ratewarden?
 
 Most rate limiters are either:
 - **Too simple**: Only rate limit by IP (breaks for shared networks)

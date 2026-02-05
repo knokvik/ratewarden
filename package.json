@@ -1,6 +1,6 @@
 {
     "name": "ratewarden",
-    "version": "1.0.1",
+    "version": "1.1.0",
     "description": "A zero-config, identity-aware, tier-based rate limiter for Node.js APIs",
     "main": "src/index.js",
     "scripts": {
@@ -38,5 +38,13 @@
     "homepage": "https://github.com/knokvik/ratewarden#readme",
     "dependencies": {
         "express": "^5.2.1"
+    },
+    "peerDependencies": {
+        "redis": "^4.0.0"
+    },
+    "peerDependenciesMeta": {
+        "redis": {
+            "optional": true
+        }
     }
 }

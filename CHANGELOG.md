@@ -5,6 +5,55 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-02-05
+
+### Added
+- 🚀 **Redis support for distributed rate limiting**
+  - Optional Redis store for multi-server deployments
+  - Automatic store selection: in-memory (default) or Redis
+  - Uses Redis sorted sets for sliding window algorithm
+  - Atomic operations via multi/exec pipeline
+  - Automatic key expiration (TTL = 2x windowMs)
+- 🏗️ **Store abstraction layer**
+  - New modular architecture: `stores/memory.js` and `stores/redis.js`
+  - Unified store interface with async methods
+  - Easy to add custom store implementations
+- 📦 **New configuration options**
+  - `redisClient`: Pass a connected Redis client instance
+  - `redisPrefix`: Customize Redis key prefix (default: 'ratewarden:')
+- 📚 **Comprehensive Redis documentation**
+  - Installation and setup guide
+  - Basic and advanced examples
+  - When to use Redis vs in-memory
+  - Redis architecture internals explained
+  - Performance characteristics
+- 🎯 **New example**: `examples/redis-distributed.js`
+  - Complete working Redis integration
+  - Graceful shutdown handling
+  - Error handling patterns
+  - Testing instructions
+
+### Changed
+- ⚙️ **Refactored middleware to async/await** for Redis compatibility
+- 🔄 **Memory store refactored** into dedicated module (backward compatible)
+- 📝 **Updated comparison table** to reflect distributed support
+- 🗺️ **Updated roadmap**: Redis moved from v2.0 to v1.1 (completed)
+- 📖 **Enhanced README** with Redis sections and updated use cases
+
+### Technical Details
+- Redis operations use `ZREMRANGEBYSCORE`, `ZCARD`, `ZADD`, `EXPIRE`
+- Keys format: `{prefix}{tier}:{identityKey}`
+- Maintains sliding window accuracy across servers
+- Zero performance impact for in-memory users
+- All 22 tests passing
+
+### Backward Compatibility
+- ✅ **100% backward compatible**
+- No breaking changes to existing API
+- In-memory remains the default (zero dependency)
+- Redis is optional peer dependency
+- Existing code works unchanged
+
 ## [1.0.1] - 2026-02-05
 
 ### Documentation

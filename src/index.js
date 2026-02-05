@@ -1,6 +1,12 @@
 /**
- * rate-guard - Identity-aware, tier-based rate limiting middleware
- * Zero-config rate limiting for Node.js APIs
+ * ratewarden - Identity-aware, tier-based rate limiting middleware
+ * 
+ * Zero-config rate limiting for Node.js APIs.
+ * Automatically detects user identity (token → user ID → IP) and applies
+ * tier-based limits (guest/free/pro/admin) using a sliding window algorithm.
+ * 
+ * @module ratewarden
+ * @see https://github.com/knokvik/ratewarden
  */
 
 const { resolveIdentity } = require('./identity');
@@ -10,17 +16,44 @@ const { setRateLimitHeaders, send429Response } = require('./headers');
 const CleanupManager = require('./cleanup');
 
 /**
- * Create rate limiting middleware
- * @param {object} options - Configuration options
- * @param {number} options.windowMs - Time window in milliseconds (default: 60000)
- * @param {object} options.tiers - Tier configuration { tierName: limit }
- * @param {function} options.resolveTier - Custom tier resolver function
- * @param {function} options.keyGenerator - Custom identity key generator
- * @param {function} options.onLimitReached - Callback when limit is reached
- * @returns {function} - Express middleware function
+ * Create a rate limiting middleware for Express.js
+ * 
+ * This is the main factory function that creates and configures the rate limiter.
+ * Call it with options (or no arguments for zero-config mode) and use the result
+ * as Express middleware.
+ * 
+ * @param {Object} [options={}] - Configuration options
+ * @param {number} [options.windowMs=60000] - Time window in milliseconds (default: 60000 = 1 minute)
+ * @param {Object} [options.tiers] - Tier configuration mapping tier names to request limits
+ *                                    (default: { guest: 30, free: 60, pro: 600, admin: Infinity })
+ * @param {Function} [options.resolveTier] - Custom tier resolver function (req => tierName)
+ *                                            Receives the request and returns a tier name
+ * @param {Function} [options.keyGenerator] - Custom identity key generator (req => uniqueKey)
+ *                                             Receives the request and returns a unique identity key
+ * @param {Function} [options.onLimitReached] - Callback when rate limit is exceeded
+ *                                               Signature: (req, res, info) => void
+ *                                               Called BEFORE sending the 429 response
+ * 
+ * @returns {Function} Express middleware function with signature (req, res, next)
+ * 
+ * @example
+ * // Zero config (recommended for most use cases)
+ * app.use(ratewarden());
+ * 
+ * @example
+ * // Custom tiers
+ * app.use(ratewarden({
+ *   tiers: { guest: 10, free: 100, pro: 1000 }
+ * }));
+ * 
+ * @example
+ * // Custom tier resolution
+ * app.use(ratewarden({
+ *   resolveTier: (req) => req.user?.plan || 'guest'
+ * }));
  */
 function rateGuard(options = {}) {
-    // Configuration
+    // Configuration with sensible defaults
     const config = {
         windowMs: options.windowMs || DEFAULT_WINDOW_MS,
         tiers: options.tiers || DEFAULT_TIERS,
@@ -29,17 +62,17 @@ function rateGuard(options = {}) {
         onLimitReached: options.onLimitReached
     };
 
-    // Create limiter instance
+    // Create limiter instance (manages sliding window state)
     const limiter = new SlidingWindowLimiter(config.windowMs);
 
-    // Start automatic cleanup
+    // Start automatic cleanup (prevents memory leaks)
     const cleanup = new CleanupManager(limiter, config.windowMs);
     cleanup.start();
 
-    // Return middleware function
+    // Return the actual middleware function
     return function rateGuardMiddleware(req, res, next) {
         try {
-            // Step 1: Resolve identity
+            // Step 1: Resolve identity (who is making this request?)
             let identityKey, source;
 
             if (config.keyGenerator) {
@@ -47,27 +80,27 @@ function rateGuard(options = {}) {
                 identityKey = config.keyGenerator(req);
                 source = 'custom';
             } else {
-                // Use default identity resolution
+                // Use default identity resolution (token → user ID → IP)
                 const identity = resolveIdentity(req);
                 identityKey = identity.key;
                 source = identity.source;
             }
 
-            // Step 2: Resolve tier
+            // Step 2: Resolve tier (what limits should apply?)
             const tier = resolveTier(req, source, config.resolveTier);
 
             // Step 3: Get limit for tier
             const limit = getTierLimit(tier, config.tiers);
 
-            // Step 4: Check rate limit
+            // Step 4: Check rate limit (sliding window algorithm)
             const result = limiter.checkLimit(identityKey, limit);
 
-            // Step 5: Set headers
+            // Step 5: Set standard HTTP RateLimit headers
             setRateLimitHeaders(res, limit, result.remaining, result.resetTime);
 
             // Step 6: Handle result
             if (!result.allowed) {
-                // Call custom handler if provided
+                // Call custom handler if provided (for logging, monitoring, etc.)
                 if (config.onLimitReached) {
                     config.onLimitReached(req, res, {
                         tier,
@@ -77,7 +110,7 @@ function rateGuard(options = {}) {
                     });
                 }
 
-                // Send 429 response
+                // Send 429 Too Many Requests response
                 return send429Response(res, {
                     tier,
                     limit,
@@ -86,12 +119,12 @@ function rateGuard(options = {}) {
                 });
             }
 
-            // Request allowed - continue
+            // Request allowed - continue to next middleware
             next();
 
         } catch (error) {
-            // On error, allow request but log it
-            console.error('[rate-guard] Error:', error.message);
+            // On error, allow request but log it (fail-open for reliability)
+            console.error('[ratewarden] Error:', error.message);
             next();
         }
     };

@@ -19,7 +19,10 @@ class CleanupManager {
         }
 
         this.intervalId = setInterval(() => {
-            this.limiter.cleanup();
+            // Support both old limiter and new store interface
+            if (typeof this.limiter.cleanup === 'function') {
+                this.limiter.cleanup();
+            }
         }, this.intervalMs);
 
         // Don't keep process alive just for cleanup

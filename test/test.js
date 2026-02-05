@@ -113,54 +113,67 @@ setTimeout(() => {
     const next = () => { nextCalled = true; };
 
     middleware(req, res, next);
-    assert(nextCalled === true, 'Middleware should call next() on first request');
-    assert(res.headers['RateLimit-Limit'] === '2', 'Should set RateLimit-Limit header');
-    assert(res.headers['RateLimit-Remaining'] === '1', 'Should set RateLimit-Remaining header');
 
-    // Test: Rate limit exceeded
-    console.log('\n=== Testing Rate Limit Exceeded ===\n');
+    // Wait for async middleware to complete
+    setTimeout(() => {
+        assert(nextCalled === true, 'Middleware should call next() on first request');
+        assert(res.headers['RateLimit-Limit'] === '2', 'Should set RateLimit-Limit header');
+        assert(res.headers['RateLimit-Remaining'] === '1', 'Should set RateLimit-Remaining header');
 
-    const req2 = mockRequest({ authorization: 'Bearer test' });
-    const res2 = mockResponse();
-    let next2Called = false;
-    const next2 = () => { next2Called = true; };
+        // Test: Rate limit exceeded
+        console.log('\n=== Testing Rate Limit Exceeded ===\n');
 
-    middleware(req2, res2, next2);
-    assert(next2Called === true, 'Second request should pass');
+        const req2 = mockRequest({ authorization: 'Bearer test' });
+        const res2 = mockResponse();
+        let next2Called = false;
+        const next2 = () => { next2Called = true; };
 
-    const req3 = mockRequest({ authorization: 'Bearer test' });
-    const res3 = mockResponse();
-    let next3Called = false;
-    const next3 = () => { next3Called = true; };
+        middleware(req2, res2, next2);
 
-    middleware(req3, res3, next3);
-    assert(next3Called === false, 'Third request should be blocked');
-    assert(res3.statusCode === 429, 'Should return 429 status');
-    assert(res3.body.error === 'Too many requests', 'Should return error message');
-    assert(res3.headers['Retry-After'] !== undefined, 'Should set Retry-After header');
+        setTimeout(() => {
+            assert(next2Called === true, 'Second request should pass');
 
-    // Test: Different identities
-    console.log('\n=== Testing Different Identities ===\n');
+            const req3 = mockRequest({ authorization: 'Bearer test' });
+            const res3 = mockResponse();
+            let next3Called = false;
+            const next3 = () => { next3Called = true; };
 
-    const req4 = mockRequest({ authorization: 'Bearer different-token' });
-    const res4 = mockResponse();
-    let next4Called = false;
-    const next4 = () => { next4Called = true; };
+            middleware(req3, res3, next3);
 
-    middleware(req4, res4, next4);
-    assert(next4Called === true, 'Different identity should have separate limit');
+            setTimeout(() => {
+                assert(next3Called === false, 'Third request should be blocked');
+                assert(res3.statusCode === 429, 'Should return 429 status');
+                assert(res3.body.error === 'Too many requests', 'Should return error message');
+                assert(res3.headers['Retry-After'] !== undefined, 'Should set Retry-After header');
 
-    // Results
-    console.log('\n=== Test Results ===\n');
-    console.log(`Passed: ${passed}`);
-    console.log(`Failed: ${failed}`);
-    console.log(`Total: ${passed + failed}`);
+                // Test: Different identities
+                console.log('\n=== Testing Different Identities ===\n');
 
-    if (failed === 0) {
-        console.log('\n✓ All tests passed!\n');
-        process.exit(0);
-    } else {
-        console.log('\n✗ Some tests failed!\n');
-        process.exit(1);
-    }
+                const req4 = mockRequest({ authorization: 'Bearer different-token' });
+                const res4 = mockResponse();
+                let next4Called = false;
+                const next4 = () => { next4Called = true; };
+
+                middleware(req4, res4, next4);
+
+                setTimeout(() => {
+                    assert(next4Called === true, 'Different identity should have separate limit');
+
+                    // Results
+                    console.log('\n=== Test Results ===\n');
+                    console.log(`Passed: ${passed}`);
+                    console.log(`Failed: ${failed}`);
+                    console.log(`Total: ${passed + failed}`);
+
+                    if (failed === 0) {
+                        console.log('\n✓ All tests passed!\n');
+                        process.exit(0);
+                    } else {
+                        console.log('\n✗ Some tests failed!\n');
+                        process.exit(1);
+                    }
+                }, 50);
+            }, 50);
+        }, 50);
+    }, 50);
 }, 1100); // Wait for window to expire

@@ -15,8 +15,9 @@ Most rate limiters are either:
 - **Identity-aware**: Automatically detects users from tokens, headers, or IP
 - **Tier-based**: Different limits for free, pro, admin users
 - **Standard headers**: Uses draft IETF RateLimit headers
-- **No dependencies**: Pure Node.js, no Redis required
+- **No dependencies**: Pure Node.js, no Redis required (but Redis supported for distributed systems)
 - **Production-ready**: Memory-safe with automatic cleanup
+- **Scales up**: Optional Redis support for multi-server deployments
 
 ## Quick Start
 
@@ -143,6 +144,101 @@ app.use('/api', ratewarden({
 }));
 ```
 
+### Using with Redis (Distributed Systems)
+
+For **multi-server deployments**, use Redis to share rate limit state across all servers:
+
+#### Installation
+
+```bash
+npm install redis
+```
+
+#### Basic Setup
+
+```javascript
+const { createClient } = require('redis');
+const ratewarden = require('ratewarden');
+
+// Create and connect Redis client
+const redisClient = await createClient({
+  url: 'redis://localhost:6379'
+}).connect();
+
+// Pass redisClient to ratewarden
+app.use(ratewarden({
+  redisClient
+}));
+```
+
+#### Full Example with Options
+
+```javascript
+const redisClient = await createClient({
+  url: process.env.REDIS_URL || 'redis://localhost:6379',
+  // Optional: configure connection pooling, timeouts, etc.
+}).connect();
+
+app.use(ratewarden({
+  windowMs: 60000,
+  tiers: {
+    guest: 30,
+    free: 100,
+    pro: 1000
+  },
+  redisClient,
+  redisPrefix: 'myapp:ratelimit:', // Custom key prefix
+  onLimitReached: (req, res, info) => {
+    console.log(`Rate limit exceeded: ${info.tier}`);
+  }
+}));
+```
+
+#### When to Use Redis
+
+**Use Redis when:**
+- You have multiple app servers (horizontal scaling)
+- You need consistent rate limits across servers
+- You deploy with Docker/Kubernetes (multiple pods)
+- You use serverless/edge functions (shared state needed)
+
+**Use in-memory when:**
+- Single server deployment
+- Development/testing
+- Simplicity is more important than distributed state
+
+#### Redis Architecture
+
+Under the hood, `ratewarden` uses **Redis sorted sets** for sliding window:
+
+```
+Key: ratewarden:{tier}:{identityKey}
+Value: Sorted set of timestamps
+Score: Request timestamp (ms)
+TTL: 2x windowMs (auto-cleanup)
+```
+
+Example:
+```
+ratewarden:free:user123 → ZSET { 
+  1678900001234: "1678900001234-abc123",
+  1678900005678: "1678900005678-def456"
+}
+```
+
+Operations:
+- `ZREMRANGEBYSCORE` → Remove expired requests
+- `ZCARD` → Count requests in window
+- `ZADD` → Add new request
+- Keys auto-expire via `EXPIRE` command
+
+**Benefits:**
+- Atomic operations (no race conditions)
+- Distributed consistency
+- Automatic cleanup via TTL
+- O(log N) performance
+
+
 ## HTTP Headers
 
 `ratewarden` follows the [IETF RateLimit Headers draft](https://datatracker.ietf.org/doc/draft-ietf-httpapi-ratelimit-headers/):
@@ -205,9 +301,10 @@ Req:  ✓     ✓     ✓     ✗     ✓
 | Zero-config | Yes | No (requires config) | No (requires Redis) |
 | Identity-aware | Yes | No (IP only by default) | Manual setup |
 | Tier-based | Built-in | Custom code | Custom code |
-| Dependencies | None | None | Redis required |
+| Dependencies | None (Redis optional) | None | Redis required |
+| Distributed support | Yes (via Redis) | No | Yes |
 | Setup time | 30 seconds | 5 minutes | 30+ minutes |
-| Best for | Small-medium APIs, MVPs, Hackathons | Customizable setups | Enterprise, multi-server |
+| Best for | Small to large APIs, MVPs to Production | Customizable setups | Enterprise only |
 
 ## Configuration Options
 
@@ -227,6 +324,12 @@ interface RateGuardOptions {
   
   // Callback when limit is reached
   onLimitReached?: (req, res, info) => void;
+  
+  // Redis client for distributed rate limiting (optional)
+  redisClient?: RedisClientType;
+  
+  // Redis key prefix (default: 'ratewarden:')
+  redisPrefix?: string;
 }
 ```
 
@@ -252,26 +355,33 @@ Perfect for:
 - **MVPs and prototypes**: No infrastructure overhead
 - **SaaS APIs**: Built-in tier support
 - **Learning projects**: Simple, readable code
-- **Small-medium APIs**: Single-server deployments
+- **Single-server deployments**: Zero-config in-memory storage
+- **Multi-server deployments**: Optional Redis for distributed state
 
 Not ideal for:
-- Multi-server distributed systems (use Redis-based solution)
-- Extremely high traffic (>10k req/sec per endpoint)
-- Complex sliding window with exact fairness guarantees
+- Extremely high traffic (>10k req/sec per endpoint per server)
+- Complex sliding window with exact distributed fairness guarantees
+- Sub-millisecond precision requirements
 
 ## Roadmap
 
-**v1.0** (Current)
+**v1.0** (Released)
 - Sliding window algorithm
 - Identity resolution
 - Tier-based limits
 - Standard headers
+- In-memory storage
+
+**v1.1** (Current)
+- Redis adapter for distributed systems
+- Store abstraction layer
+- Backward-compatible API
 
 **v2.0** (Future)
-- [ ] Redis adapter for distributed systems
-- [ ] Prometheus metrics
-- [ ] Rate limit analytics
-- [ ] Fastify support
+- [ ] Prometheus metrics export
+- [ ] Rate limit analytics dashboard
+- [ ] Fastify and Koa adapters
+- [ ] GraphQL query complexity integration
 
 ## Contributing
 

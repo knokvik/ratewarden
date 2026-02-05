@@ -1,0 +1,13 @@
+{
+    "name": "ratewarden-express-basic-example",
+    "version": "1.0.1",
+    "description": "Basic Express example for ratewarden",
+    "private": true,
+    "main": "index.js",
+    "scripts": {
+        "start": "node index.js"
+    },
+    "dependencies": {
+        "express": "^5.2.1"
+    }
+}

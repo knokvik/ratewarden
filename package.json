@@ -1,6 +1,6 @@
 {
     "name": "ratewarden",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "A zero-config, identity-aware, tier-based rate limiter for Node.js APIs",
     "main": "src/index.js",
     "scripts": {
@@ -14,7 +14,14 @@
         "api",
         "throttle",
         "tier-based",
-        "identity-aware"
+        "identity-aware",
+        "sliding-window",
+        "zero-config",
+        "ddos-protection",
+        "api-protection",
+        "request-limiting",
+        "node",
+        "nodejs"
     ],
     "author": "Niraj Rajendra Naphade",
     "license": "MIT",
@@ -25,6 +32,10 @@
         "type": "git",
         "url": "https://github.com/knokvik/ratewarden.git"
     },
+    "bugs": {
+        "url": "https://github.com/knokvik/ratewarden/issues"
+    },
+    "homepage": "https://github.com/knokvik/ratewarden#readme",
     "dependencies": {
         "express": "^5.2.1"
     }

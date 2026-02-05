@@ -4,21 +4,21 @@
 
 Stop API abuse without the hassle. `ratewarden` automatically understands who is making requests and applies intelligent rate limits based on user tiers.
 
-## 🎯 Why Ratewarden?
+## Why Ratewarden?
 
 Most rate limiters are either:
 - **Too simple**: Only rate limit by IP (breaks for shared networks)
 - **Too complex**: Require Redis, complex configuration, or 20+ options
 
 `ratewarden` is the Goldilocks solution:
-- ✅ **Zero-config**: Works out of the box with sensible defaults
-- ✅ **Identity-aware**: Automatically detects users from tokens, headers, or IP
-- ✅ **Tier-based**: Different limits for free, pro, admin users
-- ✅ **Standard headers**: Uses draft IETF RateLimit headers
-- ✅ **No dependencies**: Pure Node.js, no Redis required
-- ✅ **Production-ready**: Memory-safe with automatic cleanup
+- **Zero-config**: Works out of the box with sensible defaults
+- **Identity-aware**: Automatically detects users from tokens, headers, or IP
+- **Tier-based**: Different limits for free, pro, admin users
+- **Standard headers**: Uses draft IETF RateLimit headers
+- **No dependencies**: Pure Node.js, no Redis required
+- **Production-ready**: Memory-safe with automatic cleanup
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Installation
 
@@ -45,10 +45,10 @@ app.listen(3000);
 ```
 
 **Default limits:**
-- 🔐 Authenticated users (token/user ID): **60 requests / minute**
-- 👤 Anonymous users (IP only): **30 requests / minute**
+- Authenticated users (token/user ID): **60 requests / minute**
+- Anonymous users (IP only): **30 requests / minute**
 
-## 🧠 How It Works
+## How It Works
 
 ### Smart Identity Resolution
 
@@ -61,9 +61,9 @@ Request → Check Authorization header (JWT/API key)
 ```
 
 This means:
-- ✅ Users with auth tokens get their own limits
-- ✅ Shared WiFi (coffee shops, offices) doesn't break your API
-- ✅ Anonymous users still get protected
+- Users with auth tokens get their own limits
+- Shared WiFi (coffee shops, offices) doesn't break your API
+- Anonymous users still get protected
 
 ### Automatic Tier Assignment
 
@@ -75,7 +75,7 @@ Based on identity, users are automatically assigned tiers:
 | x-user-id header | `free` | 60/min |
 | IP address only | `guest` | 30/min |
 
-## 📚 Advanced Usage
+## Advanced Usage
 
 ### Custom Tiers
 
@@ -143,7 +143,7 @@ app.use('/api', ratewarden({
 }));
 ```
 
-## 📡 HTTP Headers
+## HTTP Headers
 
 `ratewarden` follows the [IETF RateLimit Headers draft](https://datatracker.ietf.org/doc/draft-ietf-httpapi-ratelimit-headers/):
 
@@ -172,7 +172,7 @@ Retry-After: 24
 }
 ```
 
-## 🏗️ Architecture
+## Architecture
 
 ### Algorithm: Sliding Window Counter
 
@@ -198,18 +198,18 @@ Req:  ✓     ✓     ✓     ✗     ✓
 - Background cleanup runs every minute
 - No memory leaks on long-running servers
 
-## 🆚 Comparison with Other Libraries
+## Comparison with Other Libraries
 
 | Feature | ratewarden | express-rate-limit | rate-limiter-flexible |
 |---------|-----------|-------------------|---------------------|
-| Zero-config | ✅ | ❌ (requires config) | ❌ (requires Redis) |
-| Identity-aware | ✅ | ❌ (IP only by default) | ⚠️ (manual setup) |
-| Tier-based | ✅ Built-in | ⚠️ Custom code | ⚠️ Custom code |
-| Dependencies | ✅ None | ✅ None | ❌ Redis required |
-| Setup time | 🟢 30 seconds | 🟡 5 minutes | 🔴 30+ minutes |
+| Zero-config | Yes | No (requires config) | No (requires Redis) |
+| Identity-aware | Yes | No (IP only by default) | Manual setup |
+| Tier-based | Built-in | Custom code | Custom code |
+| Dependencies | None | None | Redis required |
+| Setup time | 30 seconds | 5 minutes | 30+ minutes |
 | Best for | Small-medium APIs, MVPs, Hackathons | Customizable setups | Enterprise, multi-server |
 
-## 🔧 Configuration Options
+## Configuration Options
 
 ```typescript
 interface RateGuardOptions {
@@ -230,7 +230,7 @@ interface RateGuardOptions {
 }
 ```
 
-## 🧪 Testing
+## Testing
 
 Run tests:
 
@@ -245,27 +245,27 @@ Passed: 15
 Failed: 0
 ```
 
-## 📦 Use Cases
+## Use Cases
 
 Perfect for:
-- 🚀 **Hackathon projects**: Deploy protection in 30 seconds
-- 🧪 **MVPs and prototypes**: No infrastructure overhead
-- 📱 **SaaS APIs**: Built-in tier support
-- 🎓 **Learning projects**: Simple, readable code
-- 🏢 **Small-medium APIs**: Single-server deployments
+- **Hackathon projects**: Deploy protection in 30 seconds
+- **MVPs and prototypes**: No infrastructure overhead
+- **SaaS APIs**: Built-in tier support
+- **Learning projects**: Simple, readable code
+- **Small-medium APIs**: Single-server deployments
 
 Not ideal for:
-- ❌ Multi-server distributed systems (use Redis-based solution)
-- ❌ Extremely high traffic (>10k req/sec per endpoint)
-- ❌ Complex sliding window with exact fairness guarantees
+- Multi-server distributed systems (use Redis-based solution)
+- Extremely high traffic (>10k req/sec per endpoint)
+- Complex sliding window with exact fairness guarantees
 
-## 🛣️ Roadmap
+## Roadmap
 
 **v1.0** (Current)
-- ✅ Sliding window algorithm
-- ✅ Identity resolution
-- ✅ Tier-based limits
-- ✅ Standard headers
+- Sliding window algorithm
+- Identity resolution
+- Tier-based limits
+- Standard headers
 
 **v2.0** (Future)
 - [ ] Redis adapter for distributed systems
@@ -273,7 +273,7 @@ Not ideal for:
 - [ ] Rate limit analytics
 - [ ] Fastify support
 
-## 🤝 Contributing
+## Contributing
 
 Contributions welcome! Please:
 1. Fork the repo
@@ -281,11 +281,11 @@ Contributions welcome! Please:
 3. Add tests for new features
 4. Submit a PR
 
-## 📄 License
+## License
 
 MIT © Niraj Rajendra Naphade
 
-## 💡 Philosophy
+## Philosophy
 
 **Batteries included, but removable.**
 
@@ -293,4 +293,4 @@ MIT © Niraj Rajendra Naphade
 
 ---
 
-**Made with ❤️ for developers who want protection without complexity**
+**Made for developers who want protection without complexity**
